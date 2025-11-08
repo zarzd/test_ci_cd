@@ -1,0 +1,67 @@
+# .github/workflows/ci.yml
+name: Code Quality CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+  # Нужно для gitleaks-action для загрузки отчетов в GitHub Security
+  security-events: write
+  # Нужно для аннотаций в PR
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.13"
+
+jobs:
+  quality-checks:
+    name: Linting and Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          # Включаем кэширование для ускорения повторных запусков
+          cache: "pip"
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Run all pre-commit hooks
+        # Эта ОДНА команда заменяет все ваши старые задачи.
+        # Она читает .pre-commit-config.yaml и запускает ВСЕ хуки.
+        run: uv run pre-commit run --all-files --show-diff-on-failure
+
+
+  security-scan:
+    name: Security Scan (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Gitleaks нужен доступ ко всей истории коммитов для эффективного поиска
+          fetch-depth: 0
+
+      - name: Run Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          # Включает интеграцию с GitHub Security Tab
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_UPLOAD: true

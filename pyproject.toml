@@ -1,0 +1,137 @@
+# ==============================================================================
+# === Метаданные проекта =====================================================
+# ==============================================================================
+[project]
+name = "ai-service"
+version = "0.1.0"
+description = "AI Service"
+readme = "README.md"
+# ИЗМЕНЕНИЕ 1: Сделали версию Python менее строгой
+requires-python = ">=3.13, <4.0"
+dependencies = [
+  "fastapi>=0.116.0",
+  "uvicorn[standard]>=0.35.0",
+  "pydantic>=2.11.0",
+  "websockets>=15.0.0",
+  "aws-lambda-powertools>=3.16.0",
+  "aioboto3>=13.4.0",
+  "smithy-aws-core>=0.0.1,<0.1.0",
+  "aws_sdk_bedrock_runtime>=0.0.2",
+  "tenacity>=9.1.2",
+  "langchain>=0.3.26, <1.0.0",
+  "langchain-core>=0.3.68, <1.0.0",
+  "pydantic_settings>=2.7.1",
+  "pypdf>=5.8.0",
+  "python-docx>=1.2.0",
+  "pgvector>=0.4.1",
+  "sqlalchemy[asyncio]>=2.0.0",
+  "asyncpg>=0.30.0",
+  "redis[hiredis]>=5.2.0",
+]
+
+# ИЗМЕНЕНИЕ 2: Добавили все инструменты в dev-зависимости
+[project.optional-dependencies]
+dev = [
+    # Инструменты для CI/CD и pre-commit
+    "ruff>=0.14.3",
+    "mypy>=1.18.2",
+    "pre-commit>=4.3.0",
+]
+
+# ==============================================================================
+# === Настройки MyPy (Проверка типов) ==========================================
+# ==============================================================================
+[tool.mypy]
+mypy_path = "src"
+python_version = "3.13"
+warn_unused_configs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+strict = true
+disallow_untyped_decorators = false
+disallow_subclassing_any = false
+ignore_missing_imports = true
+disallow_untyped_calls = false
+disallow_untyped_defs = true  # Запретить функции без аннотаций
+check_untyped_defs = true     # Проверять тела функций без аннотаций
+strict_equality = true
+pretty = true                  # Включает красивый вывод с подсветкой кода
+show_error_context = true      # Показывает строки кода вокруг ошибки
+show_column_numbers = true     # Показывает не только строку, но и колонку
+plugins = ["pydantic.mypy"]
+
+# ==============================================================================
+# === Настройки Ruff (Линтер + Форматтер) ======================================
+# ==============================================================================
+[tool.ruff]
+# Указываем, что наш код нацелен на Python 3.13
+line-length = 88
+target-version = "py313"
+
+# ИЗМЕНЕНИЕ 3: Добавили секцию для форматтера, чтобы сделать правила явными
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint]
+ignore = ["D203", "D212", "D104", "PLR0913", "TRY301"]
+select = [
+  "E",     # pycodestyle
+  "F",     # pyflakes
+  "W",     # pycodestyle
+  "I",     # isort
+  "D",     # pydocstyle
+  "UP",    # pyupgrade
+  "N",     # pep8-naming
+  "YTT",   # flake8-2020
+  "ANN",   # flake8-annotations
+  "ASYNC", # flake8-async
+  "S",     # flake8-bandit
+  "FBT",   # flake8-boolean-trap
+  "B",     # flake8-bugbear
+  "A",     # flake8-builtins
+  "C4",    # flake8-comprehensions
+  "DTZ",   # flake8-datetimez
+  "T10",   # flake8-debugger
+  "EM",    # flake8-errmsg
+  "PIE",   # flake8-pie
+  "T20",   # flake8-print
+  "PT",    # flake8-pytest-style
+  "Q",     # flake8-quotes
+  "RSE",   # flake8-raise
+  "RET",   # flake8-return
+  "SLF",   # flake8-self
+  "SIM",   # flake8-simplify
+  "ARG",   # flake8-unused-arguments
+  "PTH",   # flake8-use-pathlib
+  "PL",    # pylint
+  "TRY",   # tryceratops
+  "FLY",   # flynt
+  "NPY",   # NumPy-specific rules
+  "PERF",  # Perflint
+  "FURB",  # refurb
+  "RUF",   # Ruff-specific rules,
+  "FAST",  # fastapi-specific rules
+  "LOG",
+  "G",
+  "INP",
+  "TID",
+  "TC",
+  "PD",
+  "DOC",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+# ==============================================================================
+# === Настройки сборки проекта =================================================
+# ==============================================================================
+[tool.setuptools]
+package-dir = { "" = "src" }
