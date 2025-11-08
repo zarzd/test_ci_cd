@@ -14,9 +14,9 @@ def calculate_ratio(items_processed: int, total_items: int) -> float:
     """
     # A clear problem: what if total_items is 0?
     # Gemini should be able to spot this potential ZeroDivisionError.
-    if total_items > 0:
-        return items_processed / total_items
-    return 0.0  # Not the best solution; Gemini might suggest raising an error.
+    if total_items <= 0:
+        raise ValueError("total_items must be a positive number.")
+    return items_processed / total_items
 
 
 def process_data(data_list: list[int]) -> list[int]:
