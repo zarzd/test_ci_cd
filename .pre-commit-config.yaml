@@ -15,6 +15,7 @@ repos:
       - id: debug-statements       # NEW: Предотвращает случайный коммит отладочных операторов (breakpoint(), import pdb)
       - id: no-commit-to-branch    # NEW: Защищает главные ветки от прямых коммитов
         args: [--branch, main, --branch, dev] # Настройте под ваши основные ветки
+        stages: [commit]
 
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
